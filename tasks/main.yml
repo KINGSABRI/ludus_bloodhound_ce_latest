@@ -17,13 +17,19 @@
     mode: "0755"
   when: not bh_installed.stat.exists
 
-- name: Copy the docker-compose.yml file
-  become: true
-  ansible.builtin.copy:
-    src: docker-compose.yml
-    dest: "{{ ludus_bloodhound_ce_install_path }}/docker-compose.yml"
-    mode: "0644"
+- name: Download latest docker-compose.yml for Bloodhound CE
+  get_url:
+    url: "https://ghst.ly/getbhce"
+    dest: "{{ ludus_bloodhound_ce_install_path }}/docker-compose.yml"  # Adjust destination as needed
+    mode: '0644'
+    force: yes  # Ensures the file is updated on every deployment
   when: not bh_installed.stat.exists
+
+- name: Check if docker-compose.yml exists
+  stat:
+    path: "{{ ludus_bloodhound_ce_install_path }}/docker-compose.yml"
+  register: compose_file
+  become: true
 
 - name: Copy the .env template to the host
   ansible.builtin.template:
@@ -60,7 +66,7 @@
     msg: "Bloodhound is up and running!"
   when: not bh_installed.stat.exists
 
-- name: BH-CE Credz
+- name: BH-CE Creds
   ansible.builtin.debug:
     msg: "Access BH-CE at http://{{ ansible_host }}:{{ ludus_bloodhound_port }} using admin -> {{ ludus_bloodhound_admin_password }}"
   when: not bh_installed.stat.exists
