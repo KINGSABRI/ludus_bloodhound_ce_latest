@@ -19,6 +19,7 @@
 
 - name: Download latest docker-compose.yml for Bloodhound CE
   get_url:
+    msg: "Download latest docker-compose.yml for Bloodhound CE"
     url: "https://ghst.ly/getbhce"
     dest: "{{ ludus_bloodhound_ce_install_path }}/docker-compose.yml"  # Adjust destination as needed
     mode: '0644'
